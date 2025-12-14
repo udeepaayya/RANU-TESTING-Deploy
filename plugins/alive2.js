@@ -28,7 +28,7 @@ cmd({
     pattern: "alive2",
     alias: ["hyranu2", "ranu2", "status2", "a2"],
     react: "🌝",
-    desc: "Check bot online or no. Reply to alive message to get ping.",
+    desc: "Check bot online or no. Reply 1 to alive message to get ping.",
     category: "main",
     filename: __filename
 },
@@ -91,54 +91,56 @@ async (robin, mek, m, { from, sender, reply }) => {
     }
 });
 
-// REPLY LISTENER FOR PING
+// LISTENER FOR REPLY WITH NUMBER 1
 cmd({
-    pattern: "1",
-    fromMe: false, // respond to everyone
-    desc: "Reply to alive message to check ping",
+    pattern: ".*",
+    fromMe: false,
+    desc: "Reply with 1 to alive message to check ping",
     category: "main",
     filename: __filename
 },
 async (robin, mek, m, { from, sender, quoted, reply }) => {
     try {
-        // Only trigger if the message is a reply
+        // Only proceed if message is a reply
         if (!quoted || !quoted.key) return;
 
-        // Check if replied message is in aliveMessages
+        // Check if replied message is an alive message
         if (global.aliveMessages && global.aliveMessages.includes(quoted.key.id)) {
-            const startTime = Date.now();
-            const emojis = ['💀', '⚡'];
-            const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+            // Only trigger if user replied with "1"
+            if (m.text && m.text.trim() === "1") {
+                const startTime = Date.now();
+                const emojis = ['💀', '⚡'];
+                const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
 
-            // React
-            await robin.sendMessage(from, {
-                react: { text: randomEmoji, key: mek.key }
-            });
+                // React
+                await robin.sendMessage(from, {
+                    react: { text: randomEmoji, key: mek.key }
+                });
 
-            // Send initial ping message
-            let sentMsg = await robin.sendMessage(from, { text: "Pinging..." }, { quoted: mek });
+                // Send initial ping message
+                let sentMsg = await robin.sendMessage(from, { text: "Pinging..." }, { quoted: mek });
 
-            // Calculate ping
-            const ping = Date.now() - startTime;
+                // Calculate ping
+                const ping = Date.now() - startTime;
 
-            // Edit same message with ping result
-            const newText = `*Ping: _${ping}ms_ ${randomEmoji}*`;
-            await robin.sendMessage(from, {
-                edit: sentMsg.key,
-                text: newText,
-                contextInfo: {
-                    mentionedJid: [sender],
-                    forwardingScore: 999,
-                    isForwarded: false,
-                    forwardedNewsletterMessageInfo: {
-                        newsletterJid: '',
-                        newsletterName: "",
-                        serverMessageId: 143
+                // Edit same message with ping result
+                const newText = `*Ping: _${ping}ms_ ${randomEmoji}*`;
+                await robin.sendMessage(from, {
+                    edit: sentMsg.key,
+                    text: newText,
+                    contextInfo: {
+                        mentionedJid: [sender],
+                        forwardingScore: 999,
+                        isForwarded: false,
+                        forwardedNewsletterMessageInfo: {
+                            newsletterJid: '',
+                            newsletterName: "",
+                            serverMessageId: 143
+                        }
                     }
-                }
-            });
+                });
+            }
         }
-
     } catch (e) {
         console.error("Ping reply error:", e);
     }
