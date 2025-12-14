@@ -1,14 +1,15 @@
-const { cmd } = require('../command'); // oya command system eka reference karanna
-const { getGroupAdmins } = require('../lib/functions'); // admin check karanna
+const { cmd } = require('../command');
+const { getGroupAdmins } = require('../lib/functions');
 
 cmd({
     pattern: 'kick',
-    desc: 'Removes a user by replying to their message',
-    fromMe: false, // true karoth me command eka oyage message walata mathu wenawa
+    react: '🙃',
+    desc: 'Removes a user by replying to their message & reacts',
+    fromMe: true,
     type: 'group'
 }, async (message, match) => {
     try {
-        if (!message.isGroup) return await message.send('⚠️ This command can only be used in groups.');
+        if (!message.isGroup) return await message.send('⚠️ This command only works in groups.');
 
         const botNumber = message.conn.user.jid.split(':')[0] + '@s.whatsapp.net';
         const groupAdmins = await getGroupAdmins(message.chat);
@@ -27,8 +28,18 @@ cmd({
             return await message.send('⚠️ Cannot kick an admin!');
         }
 
+        // Remove user
         await message.groupRemove([userToKick]);
-        await message.send('✅ User has been removed from the group.');
+
+        // React to the original message
+        await message.conn.sendMessage(message.chat, {
+            react: {
+                text: '✅', // Emoji reaction
+                key: message.quoted.key
+            }
+        });
+
+        await message.send('✅ User has been removed from the group and reaction added.');
     } catch (error) {
         console.log(error);
         await message.send('❌ Failed to kick the user.');
