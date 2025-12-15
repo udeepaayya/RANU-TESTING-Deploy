@@ -26,8 +26,8 @@ END:VCARD`
 };
 
 cmd({
-    pattern: "get",
-    alias: ["source", "js", "getplugin", "getplugins"],
+    pattern: "getranu",
+    alias: ["sourceranu", "jsranu", "getpluginranu", "getpluginsranu"],
     desc: "Fetch the full source code of a command",
     category: "owner",
     react: "📜",
