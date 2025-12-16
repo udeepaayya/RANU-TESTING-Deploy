@@ -57,17 +57,14 @@ cmd({
 2️⃣ *Document Type*
 3️⃣ *Voice Note*
 
-> Powered by 𝙳𝙰𝚁𝙺-𝙺𝙽𝙸𝙶𝙷𝚃-𝚇𝙼𝙳`;
+> © Powerd by 𝗥𝗔𝗡𝗨𝗠𝗜𝗧𝗛𝗔-𝗫-𝗠𝗗 🌛`;
 
         const sentMsg = await conn.sendMessage(from, {
             image: { url: data.thumbnail },
             caption
         }, { quoted: m });
 
-        // Track users who already replied
-        const repliedUsers = new Set();
-
-        // Temporary listener for this message
+        // Listener to handle multiple replies
         const listener = async (msgData) => {
             const receivedMsg = msgData.messages[0];
             const receivedText = receivedMsg.message?.conversation || receivedMsg.message?.extendedTextMessage?.text;
@@ -75,10 +72,6 @@ cmd({
             const isReplyToBot = receivedMsg.message?.extendedTextMessage?.contextInfo?.stanzaId === sentMsg.key.id;
 
             if (!isReplyToBot || !receivedText) return;
-
-            // Ignore if user already replied
-            if (repliedUsers.has(senderID)) return;
-            repliedUsers.add(senderID);
 
             // React ⬇️ download started
             await conn.sendMessage(senderID, { react: { text: '⬇️', key: receivedMsg.key } });
