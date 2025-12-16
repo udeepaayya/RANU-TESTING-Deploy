@@ -5,8 +5,30 @@ const fs = require("fs");
 const path = require("path");
 const ffmpeg = require("fluent-ffmpeg");
 
+// Fake ChatGPT vCard
+const fakevCard = {
+    key: {
+        fromMe: false,
+        participant: "0@s.whatsapp.net",
+        remoteJid: "status@broadcast"
+    },
+    message: {
+        contactMessage: {
+            displayName: "© Mr Hiruka",
+            vcard: `BEGIN:VCARD
+VERSION:3.0
+FN:Meta
+ORG:META AI;
+TEL;type=CELL;type=VOICE;waid=94762095304:+94762095304
+END:VCARD`
+        }
+    }
+};
+
+
 cmd({
-  pattern: "song4",
+  pattern: "song",
+  alias: ["play", "song1", "play1"],
   react: "🎵",
   desc: "YouTube Song Downloader (Multi Reply + Voice Note Fixed)",
   category: "download",
@@ -58,20 +80,23 @@ cmd({
       {
         image: { url: video.thumbnail },
         caption: `
-🎵 *Song Downloader*
+🎶 *RANUMITHA-X-MD SONG DOWNLOADER* 🎶
 
-📌 *${video.title}*
-⏱️ ${video.timestamp}
+📑 *Title:* ${video.title}
+⏱ *Duration:* ${video.timestamp}
+📆 *Uploaded:* ${video.ago}
+👁 *Views:* ${video.views}
+🔗 *Url:* ${video.url}
 
-Reply with number 👇
-(Multi reply supported)
+🔽 *Reply with your choice:*
 
-1️⃣ Audio  
-2️⃣ MP3 Document  
-3️⃣ Voice Note
-`,
+1. *Audio Type* 🎵  
+2. *Document Type* 📁  
+3. *Voice Note Type* 🎤  
+
+> © Powered by 𝗥𝗔𝗡𝗨𝗠𝗜𝗧𝗛𝗔-𝗫-𝗠𝐃 🌛`,
       },
-      { quoted: m }
+      { quoted: fakevCard }
     );
 
     const menuId = sent.key.id;
